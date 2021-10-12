@@ -14,7 +14,6 @@ except requests.exceptions.ConnectionError:
 # noinspection PyUnboundLocalVariable
 soup = bs4.BeautifulSoup(a.text, 'lxml')
 results_page = soup.find('div', class_='col-lg-8 col-md-8').find_all('div', class_='box')
-print(len(results_page))
 
 results = {}
 
@@ -30,8 +29,7 @@ for item in results_page:
     # print(item.find_all('p')[1].text)
     # print(curr_title, ":", results[curr_title])
 
-    print('\n ----------- \n')
-
+print("Found", len(results), "Results!")
 for key in results.keys():
     print(f"{key}: {results[key]}")
     print('\n ----------- \n')
