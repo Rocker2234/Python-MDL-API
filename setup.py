@@ -14,6 +14,17 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=['PyMDL'],
-    install_requires=['beautifulsoup4', 'requests'],
-    keywords='MDL movie api MyDramaList'
+    install_requires=['beautifulsoup4', 'requests', 'lxml'],
+    keywords='MDL movie api MyDramaList',
+    classifiers=[
+        "Development Status :: 1 - Planning",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3 :: Only",
+        "Topic :: Games/Entertainment",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Internet :: WWW/HTTP :: Indexing/Search"
+    ]
 )
