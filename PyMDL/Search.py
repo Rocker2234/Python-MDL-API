@@ -19,13 +19,13 @@ class SearchResult:
         return len(self.names)
 
     def __iter__(self):
-        self.index = 0
+        self.__index = 0
         return self
 
     def __next__(self):
-        if self.index < len(self.names):
-            index = self.index
-            self.index += 1
+        if self.__index < len(self.names):
+            index = self.__index
+            self.__index += 1
             return self.names[index]
         else:
             raise StopIteration
@@ -34,13 +34,13 @@ class SearchResult:
         return str(self.names)
 
 
-def search(name: str, style: str = None, year: int = None, eps: int = None, max_results=20):
-    names = []
+def search(name: str, page: int = 1, style: str = None, year: int = None, eps: int = None, score: str = None,
+           match_all: bool = True, max_results=20):
     urls = {}
     if max_results > 20:
         print("Cannot have more than 20 Results!")
         max_results = 20
-    url = f"https://mydramalist.com/search?q={name.replace(' ', '+')}"
+    url = f"https://mydramalist.com/search?q={name.replace(' ', '+')}&page={page}"
     base = requests.get(url)
     # noinspection PyUnboundLocalVariable
     soup = bs4.BeautifulSoup(base.text, 'lxml')
@@ -62,39 +62,64 @@ def search(name: str, style: str = None, year: int = None, eps: int = None, max_
         curr_url = item.find("h6").find('a')['href']
 
         # Apply filters
-        filter_check = [True, True, True]  # This is to check for filters, [0] is style, [1] is year, [2] is eps
+        if match_all:
+            filter_check = [True, True, True, True]  # Has to match all filters given
+        else:
+            filter_check = [False, False, False, False]  # Has to match atleast one of the filters given
+        # [0] is style, [1] is year, [2] is eps, [3] is score
+
+        # Check for Score
+        curr_score = item.find('span', class_='score').text
+        if score:
+            if curr_score:
+                if score.endswith('+'):
+                    if not float(curr_score) >= float(score.rstrip('+')):
+                        filter_check[3] = False
+                    else:
+                        filter_check[3] = True
+                elif score.endswith('-'):
+                    if not float(curr_score) <= float(score.rstrip('-')):
+                        filter_check[3] = False
+                    else:
+                        filter_check[3] = True
+                else:
+                    if not curr_score == score:
+                        filter_check[3] = False
+                    else:
+                        filter_check[3] = True
+            else:
+                filter_check[3] = False
 
         # Check for Episodes Filter
         if eps:
             if not ((curr_cateory.split(',')[-1]).startswith(f" {eps} episode")):
                 filter_check[2] = False
+            else:
+                filter_check[2] = True
 
         # Check for Year Filter
         if year:
             if not curr_cateory.split(',')[0].split('-')[-1].strip() == str(year):
                 filter_check[1] = False
+            else:
+                filter_check[1] = True
 
         # Check for Style Filter
         if style:
             if curr_cateory.find(style) == -1:
                 filter_check[0] = False
+            else:
+                filter_check[0] = True
 
         # Add it to list if checks pass
-        if filter_check == [True, True, True]:
+        if match_all and filter_check == [True, True, True, True]:
             urls[curr_title] = curr_url
-            names.append(curr_title)
-        # Score
-        # results[curr_title].append(item.find('span', class_='score').text)
-        # Description
-        # results[curr_title].append(item.find_all('p')[1].text)
+        elif (not match_all) and filter_check != [False, False, False, False]:
+            urls[curr_title] = curr_url
     return SearchResult(urls)
 
 
 if __name__ == "__main__":
-    res = search('Flower of evil', year=2021)
-    # print("Items:", ser.items)
-    # print(ser.names)
-    # print(ser.urls)
-    print("Results:", len(res))
+    res = search('Yellow', 2, score='7.1-', year=2013, match_all=True)
     for i in res:
         print(i)
