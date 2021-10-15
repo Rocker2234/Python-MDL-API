@@ -52,6 +52,7 @@ class Search:
 if __name__ == "__main__":
     res = Search()
     # print(res.items)
-    res.search('Flower of evil', year=2020)
+    res.search(input("Enter a movie or drama name to find them on the site: "))
+    # res.search('Flower of evil', year=2020)
     print("Items:", res.items)
     print(res.names)
