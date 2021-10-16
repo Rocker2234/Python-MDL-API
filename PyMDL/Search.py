@@ -1,5 +1,8 @@
+import time
+
 import bs4
 import requests
+import Infopage
 
 
 class SearchResult:
@@ -32,6 +35,16 @@ class SearchResult:
 
     def __str__(self):
         return str(self.names)
+
+    def get(self, name):
+        return Infopage.info(self.urls[name])
+
+    def get_all(self):
+        lst = []
+        for item in self.urls.keys():
+            print('Getting:', item)
+            lst.append(Infopage.info(self.urls[item]))
+        return lst
 
 
 def search(name: str, page: int = 1, style: str = None, year: int = None, eps: int = None, score: str = None,
@@ -120,6 +133,6 @@ def search(name: str, page: int = 1, style: str = None, year: int = None, eps: i
 
 
 if __name__ == "__main__":
-    res = search('Yellow', 2, score='7.1-', year=2013, match_all=True)
-    for i in res:
-        print(i)
+    res = search('Gold', max_results=2)
+    print(res.get_all())
+    # print(res.get(res.names[0]))
