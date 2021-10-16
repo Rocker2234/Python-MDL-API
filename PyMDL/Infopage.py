@@ -20,10 +20,10 @@ class InfoPage:
         if 'Director' in self.details.keys():
             self.director = self.details['Director']
             del self.details['Director']
-            if 'Screenwriter' in self.details.keys():
-                self.screenwriter = self.details['Screenwriter']
-                del self.details['Screenwriter']
-        else:
+        if 'Screenwriter' in self.details.keys():
+            self.screenwriter = self.details['Screenwriter']
+            del self.details['Screenwriter']
+        if 'Screenwriter & Director' in self.details.keys():
             self.director = self.screenwriter = self.details['Screenwriter & Director']
             del self.details['Screenwriter & Director']
         del self.details['Native Title'], self.details['Genres'], self.details['Duration'], \
@@ -101,6 +101,8 @@ def info(link: str):
         recbox = recsoup.find("div", class_="col-lg-8").find_all("div", class_="box-body")
         details['reco'] = []
         for item in recbox:
+            if item.find('a', class_='btn primary'):
+                continue
             details['reco'].append(item.find("a").text)
         # Finding Reviews
         revlink = url + "/reviews"
@@ -114,5 +116,6 @@ def info(link: str):
         return InfoPage(details)
 
 
-var = info("/40257-round-six")
-print(var.reviews)
+if __name__ == "__main__":
+    var = info("/35187-water-hole")
+    print(var.rec)
