@@ -8,42 +8,35 @@ class InfoPage:
         self.info.pop('reco')
         self.info.pop('reviews')
         self.info.pop('synopsis')
-
         self.details = details
-
         allkeys = self.details.keys()
 
         if 'title' in allkeys:
-            self.title = self.details['title']
+            self.title = self.details.pop('title')
         if 'thumbnail' in allkeys:
-            self.thumbnail = self.details['thumbnail']
+            self.thumbnail = self.details.pop('thumbnail')
         if 'type' in allkeys:
-            self.type = self.details['type']
+            self.type = self.details.pop('type')
         if 'synopsis' in allkeys:
-            self.synopsis = self.details['synopsis']
+            self.synopsis = self.details.pop('synopsis')
         if 'casts' in allkeys:
-            self.casts = self.details['casts']
+            self.casts = self.details.pop('casts')
         if 'native title' in allkeys:
-            self.native = self.details['native title'].strip()
+            self.native = self.details.pop('native title').strip()
         if 'genres' in allkeys:
-            self.genre = self.details['genres'].strip()
+            self.genre = self.details.pop('genres').strip()
         if 'duration' in allkeys:
-            self.duration = self.details['duration'].strip()
+            self.duration = self.details.pop('duration').strip()
         if 'country' in allkeys:
-            self.country = self.details['country'].strip()
+            self.country = self.details.pop('country').strip()
         if 'also known as' in allkeys:
-            self.aka = self.details['also known as'].split(",")
+            self.aka = self.details.pop('also known as').split(",")
         if 'director' in self.details.keys():
-            self.director = self.details['director']
-            del self.details['director']
+            self.director = self.details.pop('director')
         if 'screenwriter' in self.details.keys():
-            self.screenwriter = self.details['screenwriter']
-            del self.details['screenwriter']
+            self.screenwriter = self.details.pop('screenwriter')
         if 'screenwriter & director' in self.details.keys():
-            self.director = self.screenwriter = self.details['screenwriter & director']
-            del self.details['screenwriter & director']
-        del self.details['native title'], self.details['genres'], self.details['duration'], \
-            self.details['country'], self.details['also known as']
+            self.director = self.screenwriter = self.details.pop('screenwriter & director')
 
         self.releasedate = self.__release()
 
@@ -59,13 +52,11 @@ class InfoPage:
         date = "Not Recorded Yet"
         if self.type == "Movie":
             if 'release date' in self.details.keys():
-                date = self.details['release date'].strip()
-                del self.details['release date']
+                date = self.details.pop('release date').strip()
             return date
         else:
             if 'aired' in self.details.keys():
-                date = self.details['aired'].strip()
-                del self.details['aired']
+                date = self.details.pop('aired').strip()
             return date
 
 
