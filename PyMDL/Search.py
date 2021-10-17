@@ -1,6 +1,6 @@
 import bs4
 import requests
-import Infopage
+from .Infopage import info
 
 
 class SearchResult:
@@ -35,13 +35,13 @@ class SearchResult:
         return str(self.names)
 
     def get(self, name):
-        return Infopage.info(self.urls[name])
+        return info(self.urls[name])
 
     def get_all(self):
         lst = []
         for item in self.urls.keys():
             print('Getting:', item)
-            lst.append(Infopage.info(self.urls[item]))
+            lst.append(info(self.urls[item]))
         return lst
 
 

@@ -1,5 +1,5 @@
-from Search import search, SearchResult
-from Infopage import info, InfoPage
+from .Search import search, SearchResult
+from .Infopage import info, InfoPage
 
 __title__ = 'PyMDL'
 __license__ = 'MIT'
