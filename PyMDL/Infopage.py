@@ -40,10 +40,10 @@ class InfoPage:
 
         self.releasedate = self.__release()
 
-        if details['reco']:
-            self.rec = self.details['reco']
-        if details['reviews']:
-            self.reviews = self.details['reviews']
+        if 'reco' in self.details.keys():
+            self.rec = self.details.pop('reco')
+        if 'reviews' in self.details.keys():
+            self.rec = self.details.pop('reviews')
 
     def __str__(self):
         return str(self.info)
@@ -62,7 +62,7 @@ class InfoPage:
 
 def info(link: str):
     if not type(link) == str:
-        raise UserWarning
+        raise TypeError
     else:
         details = {}
         if link.startswith("https"):
@@ -115,8 +115,7 @@ def info(link: str):
             details['reco'].append(item.find("a").text)
 
         # Finding Reviews
-        revlink = url + "/reviews"
-        revsoup = bs4.BeautifulSoup(requests.get(revlink).text, 'lxml')
+        revsoup = bs4.BeautifulSoup(requests.get(url + "/reviews").text, 'lxml')
         rlist = revsoup.find_all('div', class_="review")
         scrs = []
         for item in rlist:
