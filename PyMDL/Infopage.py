@@ -72,6 +72,7 @@ def info(link: str):
         base = requests.get(url)
         # noinspection PyUnboundLocalVariable
         soup = bs4.BeautifulSoup(base.text, 'lxml')
+
         # Finding General Details
         mainbox = soup.find("div", class_="box")
         details['title'] = mainbox.find("h1", class_="film-title").text
@@ -96,11 +97,13 @@ def info(link: str):
             details[item.text.split(":")[0].lower()] = item.text.split(":")[1]
         if 'Duration' not in details.keys():
             details['duration'] = "Not Recorded Yet"
+
         # Checking if it is a Movie or Drama
         if 'Episodes' in details.keys():
             details['type'] = "Drama"
         else:
             details['type'] = "Movie"
+
         # Finding recommendations
         reclink = url + "/recs"
         recsoup = bs4.BeautifulSoup(requests.get(reclink).text, 'lxml')
@@ -110,19 +113,36 @@ def info(link: str):
             if item.find('a', class_='btn primary'):
                 continue
             details['reco'].append(item.find("a").text)
+
         # Finding Reviews
         revlink = url + "/reviews"
         revsoup = bs4.BeautifulSoup(requests.get(revlink).text, 'lxml')
-        allreview = revsoup.find_all("div", class_="review")
-        details['reviews'] = []
-        for item in allreview:
-            tofilter = item.find("div", class_="review-body")
-            tags = str(tofilter).find("</p>") + 4
-            details['reviews'].append(str(tofilter)[tags:str(tofilter).find("<p", tags)].replace("<br/>", "").strip())
-        # Work on Review Filter
+        rlist = revsoup.find_all('div', class_="review")
+        scrs = []
+        for item in rlist:
+            erviw = item.find_all("div", class_="row")
+            for items in erviw:
+                sbox = items.find_all("div", class_="box pull-right text-sm m-a-sm")
+                for things in sbox:
+                    scrs.append(str(things.text))  # Getting Side Scores
+        frev = []
+        for item in rlist:
+            erviw = item.find_all("div", class_="row")
+            for items in erviw:
+                reviews = items.find_all("div", class_="review-body")
+                for things in reviews:
+                    frev.append(str(things.text))   # Getting Reviews
+        remove1 = "Was this review helpful to you? Yes No Cancel"
+        remove2 = "Read More"
+        final = []
+        if len(frev) == len(scrs):
+            for item in range(len(frev)):
+                final.append(((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace("  ", ":- "))     # Final Review
+        details['reviews'] = final
         return InfoPage(details)
 
 
-if __name__ == "__main__":
-    var = info("/40257-round-six")
-    print(var)
+# Testing
+# if __name__ == "__main__":
+#     var = info("/26136-parasite-war")
+#     print(var.reviews)
