@@ -45,12 +45,13 @@ class SearchResult:
         return lst
 
 
-def search(name: str, page: int = 1, style: str = None, year: int = None, eps: int = None, score: str = None,
-           match_all: bool = True, max_results=20):
+def search(name: str, page: int = 1, style: str = None, year=None, eps: int = None, score: str = None,
+           match_all: bool = True, max_results: int = 20):
     urls = {}
     if max_results > 20:
         print("Cannot have more than 20 Results!")
         max_results = 20
+    filters_given = any([style, year, eps, score])
     url = f"https://mydramalist.com/search?q={name.replace(' ', '+')}&page={page}"
     base = requests.get(url)
     # noinspection PyUnboundLocalVariable
@@ -73,64 +74,65 @@ def search(name: str, page: int = 1, style: str = None, year: int = None, eps: i
         curr_url = item.find("h6").find('a')['href']
 
         # Apply filters
-        if match_all:
-            filter_check = [True, True, True, True]  # Has to match all filters given
-        else:
-            filter_check = [False, False, False, False]  # Has to match atleast one of the filters given
-        # [0] is style, [1] is year, [2] is eps, [3] is score
+        if filters_given:
+            if match_all:
+                filter_check = 15  # Has to match all filters given
+            else:
+                filter_check = 0  # Has to match atleast one of the filters given
+            # In Binary from MSB [0] is style, [1] is year, [2] is eps, [3] is score
 
-        # Check for Score
-        curr_score = item.find('span', class_='score').text
-        if score:
-            if curr_score:
-                if score.endswith('+'):
-                    if not float(curr_score) >= float(score.rstrip('+')):
-                        filter_check[3] = False
+            # Check for Score
+            curr_score = item.find('span', class_='score').text
+            if score:
+                if curr_score:
+                    if score.endswith('+'):
+                        if not float(curr_score) >= float(score.rstrip('+')):
+                            filter_check &= 0b1110
+                        else:
+                            filter_check |= 0b0001
+                    elif score.endswith('-'):
+                        if not float(curr_score) <= float(score.rstrip('-')):
+                            filter_check &= 0b1110
+                        else:
+                            filter_check |= 0b0001
                     else:
-                        filter_check[3] = True
-                elif score.endswith('-'):
-                    if not float(curr_score) <= float(score.rstrip('-')):
-                        filter_check[3] = False
-                    else:
-                        filter_check[3] = True
+                        if not curr_score == score:
+                            filter_check &= 0b1110
+                        else:
+                            filter_check |= 0b0001
                 else:
-                    if not curr_score == score:
-                        filter_check[3] = False
-                    else:
-                        filter_check[3] = True
-            else:
-                filter_check[3] = False
+                    filter_check &= 0b1110
 
-        # Check for Episodes Filter
-        if eps:
-            if not ((curr_cateory.split(',')[-1]).startswith(f" {eps} episode")):
-                filter_check[2] = False
-            else:
-                filter_check[2] = True
+            # Check for Episodes Filter
+            if eps:
+                if not ((curr_cateory.split(',')[-1]).startswith(f" {eps} episode")):
+                    filter_check &= 0b1101
+                else:
+                    filter_check |= 0b0010
 
-        # Check for Year Filter
-        if year:
-            if not curr_cateory.split(',')[0].split('-')[-1].strip() == str(year):
-                filter_check[1] = False
-            else:
-                filter_check[1] = True
+            # Check for Year Filter
+            if year:
+                if not curr_cateory.split(',')[0].split('-')[-1].strip() == str(year):
+                    filter_check &= 0b1011
+                else:
+                    filter_check |= 0b0100
 
-        # Check for Style Filter
-        if style:
-            if curr_cateory.find(style) == -1:
-                filter_check[0] = False
-            else:
-                filter_check[0] = True
+            # Check for Style Filter
+            if style:
+                if curr_cateory.find(style) == -1:
+                    filter_check &= 0b0111
+                else:
+                    filter_check |= 0b1000
 
         # Add it to list if checks pass
-        if match_all and filter_check == [True, True, True, True]:
+        # noinspection PyUnboundLocalVariable
+        if not filters_given:
             urls[curr_title] = curr_url
-        elif (not match_all) and filter_check != [False, False, False, False]:
+        elif match_all and filter_check == 15:
             urls[curr_title] = curr_url
-    return SearchResult(urls)
-
-
-if __name__ == "__main__":
-    res = search('Gold', max_results=2)
-    print(res.get_all())
-    # print(res.get(res.names[0]))
+        elif (not match_all) and filter_check != 0:
+            urls[curr_title] = curr_url
+    if len(urls) > 0:
+        return SearchResult(urls)
+    else:
+        return None
