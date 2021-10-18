@@ -4,10 +4,10 @@ import requests
 
 class InfoPage:
     def __init__(self, details):
-        self.info = details.copy()
-        self.info.pop('reco')
-        self.info.pop('reviews')
-        self.info.pop('synopsis')
+        self.infom = details.copy()
+        self.infom.pop('reco')
+        self.infom.pop('reviews')
+        self.infom.pop('synopsis')
         self.details = details
         allkeys = self.details.keys()
 
@@ -17,6 +17,8 @@ class InfoPage:
             self.thumbnail = self.details.pop('thumbnail')
         if 'type' in allkeys:
             self.type = self.details.pop('type')
+        if 'ratings' in allkeys:
+            self.ratings = self.details.pop('ratings')
         if 'synopsis' in allkeys:
             self.synopsis = self.details.pop('synopsis')
         if 'casts' in allkeys:
@@ -37,27 +39,21 @@ class InfoPage:
             self.screenwriter = self.details.pop('screenwriter')
         if 'screenwriter & director' in self.details.keys():
             self.director = self.screenwriter = self.details.pop('screenwriter & director')
-
-        self.releasedate = self.__release()
-
         if 'reco' in self.details.keys():
-            self.rec = self.details.pop('reco')
+            self.recommends = self.details.pop('reco')
         if 'reviews' in self.details.keys():
-            self.rec = self.details.pop('reviews')
+            self.reviews = self.details.pop('reviews')
 
-    def __str__(self):
-        return str(self.info)
-
-    def __release(self):
-        date = "Not Recorded Yet"
+        self.date = "N/A"
         if self.type == "Movie":
             if 'release date' in self.details.keys():
-                date = self.details.pop('release date').strip()
-            return date
+                self.date = self.details.pop('release date').strip()
         else:
             if 'aired' in self.details.keys():
-                date = self.details.pop('aired').strip()
-            return date
+                self.date = self.details.pop('aired').strip()
+
+    def __str__(self):
+        return str(self.infom)
 
 
 def info(link: str):
@@ -77,14 +73,20 @@ def info(link: str):
         mainbox = soup.find("div", class_="box")
         details['title'] = mainbox.find("h1", class_="film-title").text
         details['thumbnail'] = mainbox.find("img", class_="img-responsive")['src']
-        details['ratings'] = mainbox.find("div", class_="row no-gutter").find("div", class_="hfs").text
         details['synopsis'] = mainbox.find("p").text.replace('\n', ' ')
+
+        # Finding Ratings
+        details['ratings'] = mainbox.find("div", class_="hfs", itempropx="aggregateRating")
+        if details['ratings']:
+            # noinspection PyUnresolvedReferences
+            details['ratings'] = details['ratings'].find("b").text
+
         minibox = mainbox.find("div", class_="show-detailsxss").find("ul").find_all("li")
         for item in minibox[:5]:
             try:
                 if item.text.split(":")[0].lower() == 'tags':
                     continue
-                details[item.text.split(":")[0].lower()] = item.text.split(":")[1]
+                details[item.text.split(":")[0].lower()] = item.text.split(":")[1].strip()
             except IndexError:
                 continue
         castbox = soup.find("div", class_="box clear").find("div", class_="p-a-sm").find_all("b")
@@ -94,9 +96,9 @@ def info(link: str):
         details['casts'] = casts
         sidebox = soup.find("div", class_="box-body light-b").find_all("li")
         for item in sidebox[1:]:
-            details[item.text.split(":")[0].lower()] = item.text.split(":")[1]
+            details[item.text.split(":")[0].lower()] = item.text.split(":")[1].strip()
         if 'Duration' not in details.keys():
-            details['duration'] = "Not Recorded Yet"
+            details['duration'] = "N/A"
 
         # Checking if it is a Movie or Drama
         if 'Episodes' in details.keys():
@@ -130,18 +132,14 @@ def info(link: str):
             for items in erviw:
                 reviews = items.find_all("div", class_="review-body")
                 for things in reviews:
-                    frev.append(str(things.text))   # Getting Reviews
+                    frev.append(str(things.text))  # Getting Reviews
         remove1 = "Was this review helpful to you? Yes No Cancel"
         remove2 = "Read More"
         final = []
         if len(frev) == len(scrs):
             for item in range(len(frev)):
-                final.append(((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace("  ", ":- "))     # Final Review
+                final.append(
+                    ((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace(
+                        "  ", ":- "))  # Final Review
         details['reviews'] = final
         return InfoPage(details)
-
-
-# Testing
-# if __name__ == "__main__":
-#     var = info("/26136-parasite-war")
-#     print(var.reviews)
