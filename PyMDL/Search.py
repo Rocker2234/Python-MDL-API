@@ -124,13 +124,13 @@ def search(name: str, page: int = 1, style: str = None, year=None, eps: int = No
                 else:
                     filter_check |= 0b1000
 
-        # Add it to list if checks pass
-        # noinspection PyUnboundLocalVariable
-        if not filters_given:
-            urls[curr_title] = curr_url
-        elif match_all and filter_check == 15:
-            urls[curr_title] = curr_url
-        elif (not match_all) and filter_check != 0:
+            # Add it to list if checks pass
+            elif match_all and filter_check == 15:
+                urls[curr_title] = curr_url
+            elif (not match_all) and filter_check != 0:
+                urls[curr_title] = curr_url
+
+        else:   # Directly add if no filters are given
             urls[curr_title] = curr_url
     if len(urls) > 0:
         return SearchResult(urls)
