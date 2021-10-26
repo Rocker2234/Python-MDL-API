@@ -13,43 +13,73 @@ class InfoPage:
 
         if 'title' in allkeys:
             self.title = self.details.pop('title')
+        else:
+            self.title = None
         if 'thumbnail' in allkeys:
             self.thumbnail = self.details.pop('thumbnail')
+        else:
+            self.thumbnail = None
         if 'type' in allkeys:
             self.type = self.details.pop('type')
+        else:
+            self.type = None
         if 'ratings' in allkeys:
             self.ratings = self.details.pop('ratings')
+        else:
+            self.ratings = None
         if 'synopsis' in allkeys:
             self.synopsis = self.details.pop('synopsis')
+        else:
+            self.synopsis = None
         if 'casts' in allkeys:
             self.casts = self.details.pop('casts')
+        else:
+            self.casts = None
         if 'native title' in allkeys:
             self.native = self.details.pop('native title').strip()
+        else:
+            self.native = None
         if 'genres' in allkeys:
             self.genre = self.details.pop('genres').strip()
+        else:
+            self.genre = None
         if 'duration' in allkeys:
             self.duration = self.details.pop('duration').strip()
+        else:
+            self.duration = None
         if 'country' in allkeys:
             self.country = self.details.pop('country').strip()
+        else:
+            self.country = None
         if 'also known as' in allkeys:
             self.aka = self.details.pop('also known as').split(",")
-        if 'director' in self.details.keys():
+        else:
+            self.aka = None
+        if 'director' in allkeys:
             self.director = self.details.pop('director')
-        if 'screenwriter' in self.details.keys():
+        else:
+            self.director = None
+        if 'screenwriter' in allkeys:
             self.screenwriter = self.details.pop('screenwriter')
-        if 'screenwriter & director' in self.details.keys():
+        else:
+            self.screenwriter = None
+        if 'screenwriter & director' in allkeys:
             self.director = self.screenwriter = self.details.pop('screenwriter & director')
-        if 'reco' in self.details.keys():
+        if 'reco' in allkeys:
             self.recommends = self.details.pop('reco')
-        if 'reviews' in self.details.keys():
+        else:
+            self.recommends = None
+        if 'reviews' in allkeys:
             self.reviews = self.details.pop('reviews')
+        else:
+            self.reviews = None
 
         self.date = "N/A"
         if self.type == "Movie":
-            if 'release date' in self.details.keys():
+            if 'release date' in allkeys:
                 self.date = self.details.pop('release date').strip()
         else:
-            if 'aired' in self.details.keys():
+            if 'aired' in allkeys:
                 self.date = self.details.pop('aired').strip()
 
     def __str__(self):
