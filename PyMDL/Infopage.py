@@ -82,6 +82,25 @@ class InfoPage:
             if 'aired' in allkeys:
                 self.date = self.details.pop('aired').strip()
 
+    def for_json(self):
+        return {
+            self.title: {
+                'date': self.date,
+                'thumbnail': self.thumbnail,
+                'type': self.type,
+                'ratings': self.ratings,
+                'synopsis': self.synopsis,
+                'casts': self.casts,
+                'native title': self.native,
+                'genere': self.genre,
+                'duration': self.duration,
+                'country': self.country,
+                'aka': self.aka,
+                'director': self.director,
+                'screenwriter': self.screenwriter
+            }
+        }
+
     def __str__(self):
         return str(self.infom)
 
