@@ -57,7 +57,7 @@ def search(name: str, page: int = 1, style: str = None, year=None, eps: int = No
     # noinspection PyUnboundLocalVariable
     soup = bs4.BeautifulSoup(base.text, 'lxml')
     results_box = soup.find('div', class_='col-lg-8 col-md-8').find_all('div', class_='box')
-    for item in results_box[:max_results]:
+    for item in results_box:
         # Get Title
         curr_title = item.find("h6").find('a').text
 
@@ -132,6 +132,8 @@ def search(name: str, page: int = 1, style: str = None, year=None, eps: int = No
 
         else:   # Directly add if no filters are given
             urls[curr_title] = curr_url
+        if len(urls) >= max_results:
+            break
     if len(urls) > 0:
         return SearchResult(urls)
     else:
