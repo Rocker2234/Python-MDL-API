@@ -122,7 +122,7 @@ def info(link: str):
         mainbox = soup.find("div", class_="box")
         details['title'] = mainbox.find("h1", class_="film-title").text
         details['thumbnail'] = mainbox.find("img", class_="img-responsive")['src']
-        details['synopsis'] = mainbox.find("p").text.replace('\n', ' ')
+        details['synopsis'] = mainbox.find("div", class_='show-synopsis').find('span').text.replace('\n', ' ')
 
         # Finding Ratings
         details['ratings'] = mainbox.find("div", class_="hfs", itempropx="aggregateRating")
@@ -188,7 +188,6 @@ def info(link: str):
         if len(frev) == len(scrs):
             for item in range(len(frev)):
                 final.append(
-                    ((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace(
-                        "  ", ":- "))  # Final Review
+                    ((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace("  ", ":- "))  # Final Review
         details['reviews'] = final
         return InfoPage(details)
