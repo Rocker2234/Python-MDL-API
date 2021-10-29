@@ -11,7 +11,7 @@ class InfoPage:
         self.details = details
         allkeys = self.details.keys()
         self.url = self.details.pop('url')
-        
+
         if 'title' in allkeys:
             self.title = self.details.pop('title')
         else:
