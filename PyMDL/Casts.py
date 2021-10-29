@@ -48,7 +48,7 @@ class Cast:
         return str(f'Info on <{self.name}>')
 
 
-def casts(link: str):
+def casts(link: str) -> Cast:
     if not type(link) == str:
         raise TypeError
     else:
