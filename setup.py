@@ -6,7 +6,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 setup(
-    name='mdl-scraper',
+    name='PyMDL',
     version='0.1.0',
     license='MIT',
     description='Web Scraping API to fetch data from MDL',
