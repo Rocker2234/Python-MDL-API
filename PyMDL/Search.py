@@ -59,7 +59,10 @@ def search(name: str, page: int = 1, style: str = None, year=None, eps: int = No
     results_box = soup.find('div', class_='col-lg-8 col-md-8').find_all('div', class_='box')
     for item in results_box:
         # Get Title
-        curr_title = item.find("h6").find('a').text
+        try:
+            curr_title = item.find("h6").find('a').text
+        except AttributeError:
+            return None
 
         # Get Category
         curr_cateory = item.find('span', class_='text-muted')

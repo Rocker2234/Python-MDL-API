@@ -121,8 +121,8 @@ def info(link: str):
         soup = bs4.BeautifulSoup(base.text, 'lxml')
 
         # Finding General Details
-        mainbox = soup.find("div", class_="box")
-        details['title'] = mainbox.find("h1", class_="film-title").text
+        mainbox = soup.find("div", class_="col-lg-8 col-md-8 col-rightx")
+        details['title'] = mainbox.find("h1", class_="film-title")
         details['thumbnail'] = mainbox.find("img", class_="img-responsive")['src']
         details['synopsis'] = mainbox.find("div", class_='show-synopsis').find('span').text.replace('\n', ' ')
 
@@ -140,7 +140,8 @@ def info(link: str):
                 details[item.text.split(":")[0].lower()] = item.text.split(":")[1].strip()
             except IndexError:
                 continue
-        castbox = soup.find("div", class_="box clear").find("div", class_="p-a-sm").find_all("b")
+        # print(soup.find("div", class_="box clear"))
+        castbox = mainbox.find("div", class_="box clear").find("div", class_="p-a-sm").find_all("b")
         casts = []
         for item in castbox:
             casts.append(item.text)
