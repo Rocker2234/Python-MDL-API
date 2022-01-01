@@ -1,13 +1,11 @@
+import json
+
 import bs4
 import requests
 
 
 class InfoPage:
     def __init__(self, details):
-        self.infom = details.copy()
-        self.infom.pop('reco')
-        self.infom.pop('reviews')
-        self.infom.pop('synopsis')
         self.details = details
         allkeys = self.details.keys()
         self.url = self.details.pop('url')
@@ -83,9 +81,10 @@ class InfoPage:
             if 'aired' in allkeys:
                 self.date = self.details.pop('aired').strip()
 
-    def for_json(self):
+    def dumps(self) -> dict:
         return {
-            self.title: {
+            self.title:
+            {
                 'date': self.date,
                 'thumbnail': self.thumbnail,
                 'type': self.type,
@@ -102,8 +101,23 @@ class InfoPage:
             }
         }
 
+    def to_json(self):
+        return json.dumps(self.dumps())
+
+    def save(self, file: str):
+        with open(file) as f:
+            try:
+                loaded = json.load(f)
+            except json.decoder.JSONDecodeError:
+                loaded = False
+        with open(file, 'w') as f:
+            if loaded:
+                json.dump({**loaded, **self.dumps()}, f, indent=4)
+            else:
+                json.dump(self.dumps(), f, indent=4)
+
     def __str__(self):
-        return str(self.infom)
+        return str(self.dumps())
 
 
 def info(link: str):
@@ -121,8 +135,8 @@ def info(link: str):
         soup = bs4.BeautifulSoup(base.text, 'lxml')
 
         # Finding General Details
-        mainbox = soup.find("div", class_="col-lg-8 col-md-8 col-rightx")
-        details['title'] = mainbox.find("h1", class_="film-title")
+        details['title'] = soup.find("div", class_="col-lg-8 col-md-8 col-rightx").find('h1', class_='film-title').text
+        mainbox = soup.find("div", class_="col-lg-8 col-md-8 col-rightx").find('div', class_='box-body')
         details['thumbnail'] = mainbox.find("img", class_="img-responsive")['src']
         details['synopsis'] = mainbox.find("div", class_='show-synopsis').find('span').text.replace('\n', ' ')
 
@@ -132,18 +146,26 @@ def info(link: str):
             # noinspection PyUnresolvedReferences
             details['ratings'] = details['ratings'].find("b").text
 
-        minibox = mainbox.find("div", class_="show-detailsxss").find("ul").find_all("li")
-        for item in minibox[:5]:
+        detailed_info = mainbox.find("div", class_="show-detailsxss").find("ul").find_all("li")
+        req_info = ['native title', 'also known as', 'director', 'screenwriter', 'screenwriter & director', 'genres']
+        for item in detailed_info:
             try:
-                if item.text.split(":")[0].lower() == 'tags':
-                    continue
-                details[item.text.split(":")[0].lower()] = item.text.split(":")[1].strip()
+                # if item.text.split(":")[0].lower() == 'tags':
+                #     continue
+                field = item.find('b').text.lower().rstrip(':')
+                if field in req_info:
+                    curr_info = ""
+                    for i in item.find_all('a'):
+                        curr_info += i.text + ", "
+                    curr_info = curr_info.rstrip(', ').strip()
+                    details[field] = curr_info
             except IndexError:
                 continue
-        # print(soup.find("div", class_="box clear"))
-        castbox = mainbox.find("div", class_="box clear").find("div", class_="p-a-sm").find_all("b")
+        cast_names = soup.find('div', class_='col-lg-8 col-md-8 col-rightx').find("div", class_="box clear").find("div",
+                                                                                                                  class_="p-a-sm").find_all(
+            "b")
         casts = []
-        for item in castbox:
+        for item in cast_names:
             casts.append(item.text)
         details['casts'] = casts
         sidebox = soup.find("div", class_="box-body light-b").find_all("li")
@@ -191,6 +213,7 @@ def info(link: str):
         if len(frev) == len(scrs):
             for item in range(len(frev)):
                 final.append(
-                    ((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace("  ", ":- "))  # Final Review
+                    ((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace(
+                        "  ", ":- "))  # Final Review
         details['reviews'] = final
         return InfoPage(details)
