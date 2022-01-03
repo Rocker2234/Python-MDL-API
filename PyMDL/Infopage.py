@@ -1,5 +1,4 @@
 import json
-
 import bs4
 import requests
 
@@ -7,6 +6,8 @@ import requests
 class InfoPage:
     def __init__(self, details):
         self.details = details
+        self.reco = []
+        self.reviews = []
         allkeys = self.details.keys()
         self.url = self.details.pop('url')
 
@@ -64,14 +65,14 @@ class InfoPage:
             self.screenwriter = None
         if 'screenwriter & director' in allkeys:
             self.director = self.screenwriter = self.details.pop('screenwriter & director')
-        if 'reco' in allkeys:
-            self.recommends = self.details.pop('reco')
-        else:
-            self.recommends = None
-        if 'reviews' in allkeys:
-            self.reviews = self.details.pop('reviews')
-        else:
-            self.reviews = None
+        # if 'reco' in allkeys:
+        #     self.recommends = self.details.pop('reco')
+        # else:
+        #     self.recommends = None
+        # if 'reviews' in allkeys:
+        #     self.reviews = self.details.pop('reviews')
+        # else:
+        #     self.reviews = None
 
         self.date = "N/A"
         if self.type == "Movie":
@@ -81,40 +82,92 @@ class InfoPage:
             if 'aired' in allkeys:
                 self.date = self.details.pop('aired').strip()
 
+    # Finding recommendations
+    def get_recomendations(self):
+        reclink = self.url + "/recs"
+        recsoup = bs4.BeautifulSoup(requests.get(reclink).text, 'lxml')
+        recbox = recsoup.find("div", class_="col-lg-8").find_all("div", class_="box-body")
+        for item in recbox:
+            if item.find('a', class_='btn primary'):
+                continue
+            self.reco.append(item.find("a").text)
+
+    # Finding Reviews
+    def get_reviews(self):
+        revsoup = bs4.BeautifulSoup(requests.get(self.url + "/reviews").text, 'lxml')
+        rlist = revsoup.find_all('div', class_="review")
+        scrs = []
+        for item in rlist:
+            erviw = item.find_all("div", class_="row")
+            for items in erviw:
+                sbox = items.find_all("div", class_="box pull-right text-sm m-a-sm")
+                for things in sbox:
+                    scrs.append(str(things.text))  # Getting Side Scores
+        frev = []
+        for item in rlist:
+            erviw = item.find_all("div", class_="row")
+            for items in erviw:
+                reviews = items.find_all("div", class_="review-body")
+                for things in reviews:
+                    frev.append(str(things.text))  # Getting Reviews
+        remove1 = "Was this review helpful to you? Yes No Cancel"
+        remove2 = "Read More"
+        final = []
+        if len(frev) == len(scrs):
+            for item in range(len(frev)):
+                final.append(
+                    ((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace(
+                        "  ", ":- "))  # Final Review
+        self.reviews = final
+
     def dumps(self) -> dict:
-        return {
+        ret = {
             self.title:
-            {
-                'date': self.date,
-                'thumbnail': self.thumbnail,
-                'type': self.type,
-                'ratings': self.ratings,
-                'synopsis': self.synopsis,
-                'casts': self.casts,
-                'native title': self.native,
-                'genere': self.genre,
-                'duration': self.duration,
-                'country': self.country,
-                'aka': self.aka,
-                'director': self.director,
-                'screenwriter': self.screenwriter
-            }
+                {
+                    'date': self.date,
+                    'thumbnail': self.thumbnail,
+                    'type': self.type,
+                    'ratings': self.ratings,
+                    'synopsis': self.synopsis,
+                    'casts': self.casts,
+                    'native title': self.native,
+                    'genere': self.genre,
+                    'duration': self.duration,
+                    'country': self.country,
+                    'aka': self.aka,
+                    'director': self.director,
+                    'screenwriter': self.screenwriter
+                }
         }
+        if len(self.reco):
+            ret['recommendations'] = self.reco
+        if len(self.reviews):
+            ret['reviews'] = self.reviews
+        return ret
 
     def to_json(self):
         return json.dumps(self.dumps())
 
     def save(self, file: str):
-        with open(file) as f:
-            try:
-                loaded = json.load(f)
-            except json.decoder.JSONDecodeError:
-                loaded = False
-        with open(file, 'w') as f:
-            if loaded:
-                json.dump({**loaded, **self.dumps()}, f, indent=4)
-            else:
+        try:
+            with open(file) as f:
+                try:
+                    loaded = json.load(f)
+                except json.decoder.JSONDecodeError:
+                    loaded = False
+            with open(file, 'w') as f:
+                if loaded:
+                    json.dump({**loaded, **self.dumps()}, f, indent=4)
+                else:
+                    json.dump(self.dumps(), f, indent=4)
+            return True
+        except FileNotFoundError:
+            with open(file, 'w') as f:
                 json.dump(self.dumps(), f, indent=4)
+                return True
+        except Exception as e:
+            print("Got Exception\n", e)
+            return False
 
     def __str__(self):
         return str(self.dumps())
@@ -168,52 +221,15 @@ def info(link: str):
         for item in cast_names:
             casts.append(item.text)
         details['casts'] = casts
-        sidebox = soup.find("div", class_="box-body light-b").find_all("li")
-        for item in sidebox[1:]:
+        details_box = soup.find("div", class_="box-body light-b").ul.find_all("li")
+        for item in details_box[1:]:
             details[item.text.split(":")[0].lower()] = item.text.split(":")[1].strip()
         if 'duration' not in details.keys():
             details['duration'] = "N/A"
 
         # Checking if it is a Movie or Drama
-        if 'Episodes' in details.keys():
+        if 'episodes' in details.keys():
             details['type'] = "Drama"
         else:
             details['type'] = "Movie"
-
-        # Finding recommendations
-        reclink = url + "/recs"
-        recsoup = bs4.BeautifulSoup(requests.get(reclink).text, 'lxml')
-        recbox = recsoup.find("div", class_="col-lg-8").find_all("div", class_="box-body")
-        details['reco'] = []
-        for item in recbox:
-            if item.find('a', class_='btn primary'):
-                continue
-            details['reco'].append(item.find("a").text)
-
-        # Finding Reviews
-        revsoup = bs4.BeautifulSoup(requests.get(url + "/reviews").text, 'lxml')
-        rlist = revsoup.find_all('div', class_="review")
-        scrs = []
-        for item in rlist:
-            erviw = item.find_all("div", class_="row")
-            for items in erviw:
-                sbox = items.find_all("div", class_="box pull-right text-sm m-a-sm")
-                for things in sbox:
-                    scrs.append(str(things.text))  # Getting Side Scores
-        frev = []
-        for item in rlist:
-            erviw = item.find_all("div", class_="row")
-            for items in erviw:
-                reviews = items.find_all("div", class_="review-body")
-                for things in reviews:
-                    frev.append(str(things.text))  # Getting Reviews
-        remove1 = "Was this review helpful to you? Yes No Cancel"
-        remove2 = "Read More"
-        final = []
-        if len(frev) == len(scrs):
-            for item in range(len(frev)):
-                final.append(
-                    ((frev[item].replace(scrs[item], "").replace(remove1, "")).replace(remove2, "").strip()).replace(
-                        "  ", ":- "))  # Final Review
-        details['reviews'] = final
         return InfoPage(details)
