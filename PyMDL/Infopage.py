@@ -211,12 +211,12 @@ def info(link: str):
                     for i in item.find_all('a'):
                         curr_info += i.text + ", "
                     curr_info = curr_info.rstrip(', ').strip()
-                    details[field] = curr_info
+                    if curr_info != '':
+                        details[field] = curr_info
             except IndexError:
                 continue
-        cast_names = soup.find('div', class_='col-lg-8 col-md-8 col-rightx').find("div", class_="box clear").find("div",
-                                                                                                                  class_="p-a-sm").find_all(
-            "b")
+        cast_names = soup.find('div', class_='col-lg-8 col-md-8 col-rightx').\
+            find("div", class_="box clear").find("div", class_="p-a-sm").find_all("b")
         casts = []
         for item in cast_names:
             casts.append(item.text)

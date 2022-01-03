@@ -35,8 +35,10 @@ Rocker2234
 RAiU14
 
 ## Version History
+* 0.1.1
+  * Major fixes in Data Extraction and addition on saving data into json files
 * 0.1.0
-    * Initial Release
+  * Initial Release
 
 ## License
 

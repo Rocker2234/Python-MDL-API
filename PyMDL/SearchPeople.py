@@ -59,7 +59,10 @@ def search_people(name: str, page: int = 1, max_results: int = 20, nationality: 
         # print(nationality.lower(), item.find('div', class_='text-muted').text.strip('\n').lower())
         if nationality and (nationality.lower() != item.find('div', class_='text-muted').text.strip('\n').lower()):
             continue
-        urls[item.find('h6').text.strip('\n')] = item.find('h6').a['href']
+        artist = item.find('h6').text.strip('\n')
+        if artist in urls.keys():
+            artist += '/' + item.find('h6').a['href'].lstrip('/people/').split('-')[0]
+        urls[artist] = item.find('h6').a['href']
         if len(urls) >= max_results:
             break
     if len(urls) > 0:
