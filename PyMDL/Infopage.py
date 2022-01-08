@@ -4,7 +4,7 @@ import requests
 
 
 class InfoPage:
-    def __init__(self, details):
+    def __init__(self, details: dict):
         self.details = details
         self.reco = []
         self.reviews = []
@@ -65,15 +65,6 @@ class InfoPage:
             self.screenwriter = None
         if 'screenwriter & director' in allkeys:
             self.director = self.screenwriter = self.details.pop('screenwriter & director')
-        # if 'reco' in allkeys:
-        #     self.recommends = self.details.pop('reco')
-        # else:
-        #     self.recommends = None
-        # if 'reviews' in allkeys:
-        #     self.reviews = self.details.pop('reviews')
-        # else:
-        #     self.reviews = None
-
         self.date = "N/A"
         if self.type == "Movie":
             if 'release date' in allkeys:

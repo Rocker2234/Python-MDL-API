@@ -1,11 +1,12 @@
 import requests
 import bs4
+from typing import Union
 from .Casts import casts
 
 
 class PeopleSearchResult:
-    def __init__(self, urls):
-        self.names = list(urls.keys())
+    def __init__(self, urls: dict):
+        self.names = tuple(urls.keys())
         self.urls = urls
 
     def __getitem__(self, item):
@@ -34,18 +35,26 @@ class PeopleSearchResult:
     def __str__(self):
         return str(self.names)
 
-    def get(self, name):
-        return casts(self.urls[name])
+    def get(self, x: Union[int, str]):
+        if type(x) == int:
+            return casts(self.urls[self.names[x]])
+        elif type(x) == str:
+            return casts(self.urls[x])
 
-    def get_all(self):
+    def get_all(self, limit: int = 20):
         lst = []
-        for item in self.urls.keys():
+        try:
+            if limit > 20:
+                limit = 20
+        except TypeError:
+            limit = 20
+        for item in list(self.urls.keys())[:limit]:
             print('Getting:', item)
             lst.append(casts(self.urls[item]))
         return lst
 
 
-def search_people(name: str, page: int = 1, max_results: int = 20, nationality: str = None):
+def search_people(name: str, page: int = 1, max_results: int = 20, nationality: str = None) -> Union[PeopleSearchResult, None]:
     urls = {}
     if max_results > 20:
         print("Cannot have more than 20 Results!")

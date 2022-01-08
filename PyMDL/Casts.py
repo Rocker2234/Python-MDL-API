@@ -3,26 +3,27 @@ import bs4
 
 
 class Cast:
-    def __init__(self, details):
+    def __init__(self, details: dict):
         self.details = details
         keys = self.details.keys()
         self.desciption = self.details.pop('life')
+        self.url = self.details.pop('url')
         if 'name' in keys:
             self.name = self.details.pop('name')
         else:
             self.name = None
-        if 'thumnail' in keys:
-            self.thumnail = self.details.pop('thumnail')
+        if 'thumbnail' in keys:
+            self.thumbnail = self.details.pop('thumbnail')
         else:
-            self.thumnail = None
+            self.thumbnail = None
         if 'family name' in keys:
-            self.famname = self.details.pop('family name')
+            self.family_name = self.details.pop('family name')
         else:
-            self.famname = None
+            self.family_name = None
         if 'native name' in keys:
-            self.natname = self.details.pop('native name')
+            self.native_name = self.details.pop('native name')
         else:
-            self.natname = None
+            self.native_name = None
         if 'nationality' in keys:
             self.nationality = self.details.pop('nationality')
         else:
@@ -58,6 +59,7 @@ def casts(link: str) -> Cast:
         else:
             url = f"https://mydramalist.com{link}"
         base = requests.get(url)
+        details['url'] = url
         # noinspection PyUnboundLocalVariable
         soup = bs4.BeautifulSoup(base.text, 'lxml')
 

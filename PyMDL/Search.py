@@ -1,12 +1,13 @@
 import bs4
 import requests
+from typing import Union
 from .Infopage import info
 
 
 class SearchResult:
-    def __init__(self, values):
-        self.names = list(values.keys())
-        self.urls = values
+    def __init__(self, urls: dict):
+        self.names = tuple(urls.keys())
+        self.urls = urls
 
     def __getitem__(self, item):
         if type(item) == str:
@@ -34,19 +35,27 @@ class SearchResult:
     def __str__(self):
         return str(self.names)
 
-    def get(self, name):
-        return info(self.urls[name])
+    def get(self, x: Union[int, str]):
+        if type(x) == int:
+            return info(self.urls[self.names[x]])
+        elif type(x) == str:
+            return info(self.urls[x])
 
-    def get_all(self):
+    def get_all(self, limit: int = 20):
         lst = []
-        for item in self.urls.keys():
+        try:
+            if limit > 20:
+                limit = 20
+        except TypeError:
+            limit = 20
+        for item in list(self.urls.keys())[:limit]:
             print('Getting:', item)
             lst.append(info(self.urls[item]))
         return lst
 
 
 def search(name: str, page: int = 1, style: str = None, year=None, eps: int = None, score: str = None,
-           match_all: bool = True, max_results: int = 20):
+           match_all: bool = True, max_results: int = 20) -> Union[SearchResult, None]:
     urls = {}
     if max_results > 20:
         print("Cannot have more than 20 Results!")
@@ -54,7 +63,6 @@ def search(name: str, page: int = 1, style: str = None, year=None, eps: int = No
     filters_given = any([style, year, eps, score])
     url = f"https://mydramalist.com/search?q={name.replace(' ', '+')}&page={page}"
     base = requests.get(url)
-    # noinspection PyUnboundLocalVariable
     soup = bs4.BeautifulSoup(base.text, 'lxml')
     results_box = soup.find('div', class_='col-lg-8 col-md-8').find_all('div', class_='box')
     for item in results_box:
