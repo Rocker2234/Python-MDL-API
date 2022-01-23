@@ -1,7 +1,7 @@
 import requests
 import bs4
-from typing import Union
-from .Casts import casts
+from typing import Union, List
+from .Casts import casts, Cast
 
 
 class PeopleSearchResult:
@@ -35,13 +35,13 @@ class PeopleSearchResult:
     def __str__(self):
         return str(self.names)
 
-    def get(self, x: Union[int, str]):
+    def get(self, x: Union[int, str]) -> Cast:
         if type(x) == int:
             return casts(self.urls[self.names[x]])
         elif type(x) == str:
             return casts(self.urls[x])
 
-    def get_all(self, limit: int = 20):
+    def get_all(self, limit: int = 20) -> List[Cast]:
         lst = []
         try:
             if limit > 20:

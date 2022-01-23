@@ -1,3 +1,4 @@
+import json
 import requests
 import bs4
 
@@ -6,7 +7,7 @@ class Cast:
     def __init__(self, details: dict):
         self.details = details
         keys = self.details.keys()
-        self.desciption = self.details.pop('life')
+        self.description = self.details.pop('life')
         self.url = self.details.pop('url')
         if 'name' in keys:
             self.name = self.details.pop('name')
@@ -44,6 +45,81 @@ class Cast:
             self.works = self.details.pop('workfile')
         else:
             self.works = None
+        if 'first name' in keys:
+            self.first_name = self.details.pop('first name')
+        else:
+            self.first_name = None
+        if 'also known as' in keys:
+            self.aka = self.details.pop('also known as')
+        else:
+            self.aka = None
+
+    def dumps(self) -> dict:
+        return {
+            self.name:
+                {
+                    'first_name': self.first_name,
+                    'family_name': self.family_name,
+                    'native_name': self.native_name,
+                    'aka': self.aka,
+                    'gender': self.gender,
+                    'born': self.dob,
+                    'age': self.age,
+                    'nationality': self.nationality,
+                    'thumbnail': self.thumbnail,
+                    'description': self.description,
+                    'work': self.works,
+                    'url': self.url
+                }
+        }
+
+    def to_json(self) -> str:
+        return json.dumps(self.dumps())
+
+    def save(self, file: str, overwrite: bool = False) -> bool:
+        temp = self.name
+        try:
+            with open(file) as f:
+                try:
+                    loaded = json.load(f)
+                except json.decoder.JSONDecodeError:
+                    loaded = False
+
+            # Check for Name conflicts
+            repeated = False
+            if (not overwrite) and loaded:
+                i = 1
+                conflict = False
+                while 1:
+                    if self.name in loaded.keys():
+                        if self.url == loaded[self.name]['url']:
+                            print(f'{self.name} is a repeated Item!')
+                            conflict = False
+                            repeated = True
+                            break
+                        self.name = f"{temp}({i})"
+                        conflict = True
+                        i += 1
+                    else:
+                        break
+                if conflict:
+                    print(f"Conflict for name \"{temp}\", will be saved as \"{self.name}\".")
+            if not repeated:
+                with open(file, 'w') as f:
+                    if loaded:
+                        json.dump({**loaded, **self.dumps()}, f, indent=4)
+                    else:
+                        json.dump(self.dumps(), f, indent=4)
+            return True
+        except FileNotFoundError:
+            with open(file, 'w') as f:
+                json.dump(self.dumps(), f, indent=4)
+                return True
+        except Exception as e:
+            print("Got Exception\n", e)
+            return False
+        finally:
+            self.name = temp
 
     def __str__(self):
         return str(f'Info on <{self.name}>')
@@ -60,7 +136,6 @@ def casts(link: str) -> Cast:
             url = f"https://mydramalist.com{link}"
         base = requests.get(url)
         details['url'] = url
-        # noinspection PyUnboundLocalVariable
         soup = bs4.BeautifulSoup(base.text, 'lxml')
 
         # Finding Name
@@ -76,9 +151,10 @@ def casts(link: str) -> Cast:
         contents = soup.find("div", class_="box-body light-b").find_all("li")
         for item in contents:
             try:
-                if item.text.split(":")[0].lower() == 'tags':
+                key = item.text.split(":")[0].lower()
+                if key == 'tags':
                     continue
-                details[item.text.split(":")[0].lower()] = item.text.split(":")[1].strip()
+                details[key] = item.text.split(":")[1].strip()
             except IndexError:
                 continue
 

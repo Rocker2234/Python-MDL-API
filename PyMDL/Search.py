@@ -1,7 +1,7 @@
 import bs4
 import requests
-from typing import Union
-from .Infopage import info
+from typing import Union, List
+from .Infopage import info, InfoPage
 
 
 class SearchResult:
@@ -35,13 +35,13 @@ class SearchResult:
     def __str__(self):
         return str(self.names)
 
-    def get(self, x: Union[int, str]):
+    def get(self, x: Union[int, str]) -> InfoPage:
         if type(x) == int:
             return info(self.urls[self.names[x]])
         elif type(x) == str:
             return info(self.urls[x])
 
-    def get_all(self, limit: int = 20):
+    def get_all(self, limit: int = 20) -> List[InfoPage]:
         lst = []
         try:
             if limit > 20:

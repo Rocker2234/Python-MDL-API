@@ -127,7 +127,8 @@ class InfoPage:
                     'country': self.country,
                     'aka': self.aka,
                     'director': self.director,
-                    'screenwriter': self.screenwriter
+                    'screenwriter': self.screenwriter,
+                    'url': self.url
                 }
         }
         if len(self.reco):
@@ -136,10 +137,10 @@ class InfoPage:
             ret['reviews'] = self.reviews
         return ret
 
-    def to_json(self):
+    def to_json(self) -> str:
         return json.dumps(self.dumps())
 
-    def save(self, file: str):
+    def save(self, file: str) -> bool:
         try:
             with open(file) as f:
                 try:
