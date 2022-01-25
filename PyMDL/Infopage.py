@@ -1,6 +1,8 @@
 import json
 import bs4
 import requests
+from urllib.parse import urlparse
+from .exceptions import *
 
 
 class InfoPage:
@@ -165,18 +167,31 @@ class InfoPage:
         return str(self.dumps())
 
 
+def validate_url(url: str) -> str:
+    if url.startswith('/'):
+        url = f"https://mydramalist.com{url}"
+    parsed = urlparse(url)
+    if parsed.scheme not in ('https', 'http'):
+        raise InvalidURLError(url)
+    elif parsed.netloc != 'mydramalist.com':
+        raise NotMDLError(url)
+    return url
+
+
 def info(link: str):
     if not type(link) == str:
         raise TypeError
     else:
-        details = {}
-        if link.startswith("https"):
-            url = link
-        else:
-            url = f"https://mydramalist.com{link}"
-        details['url'] = url
-        base = requests.get(url)
-        # noinspection PyUnboundLocalVariable
+        url = validate_url(link)
+        try:    # Raises exception when no responce is received
+            base = requests.get(url, timeout=3)
+        except requests.exceptions.ConnectTimeout:
+            raise RequestTimeoutError
+
+        if base.status_code != 200:
+            raise BadHttpResponseError(url, base.status_code)
+
+        details = {'url': url}
         soup = bs4.BeautifulSoup(base.text, 'lxml')
 
         # Finding General Details
@@ -207,7 +222,7 @@ def info(link: str):
                         details[field] = curr_info
             except IndexError:
                 continue
-        cast_names = soup.find('div', class_='col-lg-8 col-md-8 col-rightx').\
+        cast_names = soup.find('div', class_='col-lg-8 col-md-8 col-rightx'). \
             find("div", class_="box clear").find("div", class_="p-a-sm").find_all("b")
         casts = []
         for item in cast_names:

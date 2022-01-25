@@ -1,6 +1,8 @@
 import json
 import requests
 import bs4
+from urllib.parse import urlparse
+from .exceptions import *
 
 
 class Cast:
@@ -125,17 +127,31 @@ class Cast:
         return str(f'Info on <{self.name}>')
 
 
+def validate_url(url: str) -> str:
+    if url.startswith('/'):
+        url = f"https://mydramalist.com{url}"
+    parsed = urlparse(url)
+    if parsed.scheme not in ('https', 'http'):
+        raise InvalidURLError(url)
+    elif parsed.netloc != 'mydramalist.com':
+        raise NotMDLError(url)
+    return url
+
+
 def casts(link: str) -> Cast:
     if not type(link) == str:
         raise TypeError
     else:
-        details = {}
-        if link.startswith("https"):
-            url = link
-        else:
-            url = f"https://mydramalist.com{link}"
-        base = requests.get(url)
-        details['url'] = url
+        url = validate_url(link)
+        try:  # Raises exception when no responce is received
+            base = requests.get(url, timeout=3)
+        except requests.exceptions.ConnectTimeout:
+            raise RequestTimeoutError
+
+        if base.status_code != 200:
+            raise BadHttpResponseError(url, base.status_code)
+
+        details = {'url': url}
         soup = bs4.BeautifulSoup(base.text, 'lxml')
 
         # Finding Name
