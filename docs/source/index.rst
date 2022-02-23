@@ -6,6 +6,10 @@
 Welcome to PyMDL's documentation!
 =================================
 
+PyMDL is a python API for getting the contents of All the Movies/Drams/Present in MyDramaList (MDL).
+It scrapes the content from the website parses it into an Python object.
+
+
 Installation
 ------------
 
@@ -22,6 +26,7 @@ Links
 
 
 .. toctree::
+   :numbered:
    :maxdepth: 1
    :caption: Contents:
 
