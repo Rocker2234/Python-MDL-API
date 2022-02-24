@@ -1,5 +1,7 @@
 # Changelog
 
+* 0.1.3
+  * Added Appropriate Exceptions
 * 0.1.2
   * Added JSON support for Cast and fixed typos 
 * 0.1.1

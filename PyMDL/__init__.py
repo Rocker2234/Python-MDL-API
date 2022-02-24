@@ -6,4 +6,4 @@ from .exceptions import *
 
 __title__ = 'PyMDL'
 __license__ = 'MIT'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
