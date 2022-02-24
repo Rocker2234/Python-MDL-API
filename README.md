@@ -17,30 +17,18 @@ An API for MDL to make your life easier in retriving and working on data found o
 pip install PyMDL
 ```
 
-### Executing program
-
-* How to run the program
-* Step-by-step bullets
-```
-code blocks for commands
-```
-
 ## Documentation
 
-* [Under Development]()
+* [ReadTheDocs](http://python-mdl-api.readthedocs.io/)
 
 ## Authors
 
 Rocker2234  
 RAiU14
 
-## Version History
+## Last Release Changes
 * 0.1.2
-  * Added JSON support for Cast and fixed typos 
-* 0.1.1
-  * Major fixes in Data Extraction and addition on saving data into json files
-* 0.1.0
-  * Initial Release
+  * Added JSON support for Cast and fixed typos
 
 ## License
 
