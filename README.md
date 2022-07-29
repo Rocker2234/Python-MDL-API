@@ -27,8 +27,8 @@ Rocker2234
 RAiU14
 
 ## Last Release Changes
-* 0.1.3
-  * Added Appropriate Exceptions
+* 0.1.0
+  * First Stable release
 
 ## License
 
