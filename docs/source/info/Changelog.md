@@ -1,5 +1,7 @@
 # Changelog
 
+* 1.0
+  * First Stable Release
 * 0.1.3
   * Added Appropriate Exceptions
 * 0.1.2

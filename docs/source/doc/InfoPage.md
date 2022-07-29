@@ -44,7 +44,7 @@ This is the container _class_ whose object contains all the data extracted form 
 - **synopsis**(str) - A short pllot of the movie/drama.
 - **casts**(list) - All actors that were involved in the movie/drama.
 - **native**(str) - The name of the movie in its native language.
-- **gnere**(str) - The genere the movie belongs to.
+- **genre**(str) - The genre the movie belongs to.
 - **duration**(str) - The runtime of moive or each episode of a drama.
 - **country**(str) - The country of origin.
 - **aka**(list) - Aliases of the movie/drama.
