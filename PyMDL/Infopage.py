@@ -198,7 +198,11 @@ def info(link: str):
         details['title'] = soup.find("div", class_="col-lg-8 col-md-8 col-rightx").find('h1', class_='film-title').text
         mainbox = soup.find("div", class_="col-lg-8 col-md-8 col-rightx").find('div', class_='box-body')
         details['thumbnail'] = mainbox.find("img", class_="img-responsive")['src']
-        details['synopsis'] = mainbox.find("div", class_='show-synopsis').find('span').text.replace('\n', ' ')
+        details['synopsis'] = mainbox.find("div", class_='show-synopsis').find('span')
+        if details['synopsis']:
+            details['synopsis'] = details['synopsis'].text.replace('\n', ' ')
+        else:
+            details['synopsis'] = ''
 
         # Finding Ratings
         details['ratings'] = mainbox.find("div", class_="hfs", itempropx="aggregateRating")
