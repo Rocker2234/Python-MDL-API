@@ -136,7 +136,7 @@ def search(name: str, page: int = 1, style: str = None, year=None, eps: int = No
                     filter_check |= 0b1000
 
             # Add it to list if checks pass
-            elif match_all and filter_check == 15:
+            if match_all and filter_check == 15:
                 urls[curr_title] = curr_url
             elif (not match_all) and filter_check != 0:
                 urls[curr_title] = curr_url
