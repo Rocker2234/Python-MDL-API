@@ -7,7 +7,7 @@ with open('README.md') as f:
 
 setup(
     name='PyMDL',
-    version='1.0',
+    version='1.0.1',
     license='MIT',
     description='Web Scraping API to fetch data from MDL',
     url='https://github.com/Rocker2234/Python-MDL-API',

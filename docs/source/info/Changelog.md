@@ -1,5 +1,9 @@
 # Changelog
 
+* 1.0.1
+  * Fix more Typos
+  * Fix incorrect filter when style is used
+  * Handle Empty Synopsis
 * 1.0
   * First Stable Release
 * 0.1.3

@@ -27,8 +27,9 @@ Rocker2234
 RAiU14
 
 ## Last Release Changes
-* 0.1.0
-  * First Stable release
+* 1.0.1
+  * Fix more Typos
+  * Fix incorrect filter when style is used 
 
 ## License
 
