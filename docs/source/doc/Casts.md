@@ -1,6 +1,6 @@
 # Casts
 For operations to be performed on casts/artists there is the method(_casts()_) that
-retrives the data form the webpage and a class(_Cast_) for storing it.
+retrieves the data form the webpage and a class(_Cast_) for storing it.
 
 ## **casts()**
 
@@ -14,8 +14,8 @@ This function is used to retrieve data from the webpage.
 ### Raises:
 - **InvalidURLError** - The entered URL was not a valid one.
 - **NotMDLError** - The entered URL did not belong to MDL.
-- **RequestTimeoutError** - There was some error getting the responce form the server.
-- **BadHttpResponseError** - Did not get a positive responce from the server.
+- **RequestTimeoutError** - There was some error getting the response from the server.
+- **BadHttpResponseError** - Did not get a positive response from the server.
 
 ### Returns:
 All the data that was extracted from the webpage in the _Cast_ object.
@@ -37,12 +37,12 @@ This is the container _class_ whose object contains all the data extracted form 
 - **name** - Name of the person.
 - **description** - A short bio on the person.
 - **url** - The url that was used for scraping the data.
-- **thumbnail** - Thumnail obtained directly from the website.
+- **thumbnail** - Thumbnail obtained directly from the website.
 - **first_name** - First name of the person.
 - **family_name** - Family name of the person.
 - **native_name** - Native name of the person.
 - **nationality** - Nationality of the person.
-- **gender** - Geender of the person.
+- **gender** - Gender of the person.
 - **dob** - Date of birth of the person.
 - **age** - Age of the person.
 - **works** - All the performances or established works of movies/dramas done by the person.
@@ -56,15 +56,15 @@ Saves the data in the object to a file in JSON format.
 
 #### Parameters:
 - **file**(str) - The name of the file to save the data into.
-- **overwrite**(bool) - A boolean that indicates weather to overwrite data if it alredy exists.
+- **overwrite**(bool) - A boolean that indicates weather to overwrite data if it already exists.
 
 #### Returns:
-Returns a boolean value that indicates weather the data was saved successfully or not.
+Returns a boolean value that indicates whether the data was saved successfully or not.
 
 #### Return Type:
 _bool_
 
->Note: In some senarios two or more different people will have the same name. 
+>Note: In some scenarios, two or more different people will have the same name. 
 > In that case, the name will change to `<name>(n)`. Where n is a number that starts
 > from 1 and increments by one each time a conflict is found. Starts from 2nd person
 > with the same name.

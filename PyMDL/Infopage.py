@@ -76,7 +76,7 @@ class InfoPage:
                 self.date = self.details.pop('aired').strip()
 
     # Finding recommendations
-    def get_recomendations(self):
+    def get_recommendations(self):
         reclink = self.url + "/recs"
         recsoup = bs4.BeautifulSoup(requests.get(reclink).text, 'lxml')
         recbox = recsoup.find("div", class_="col-lg-8").find_all("div", class_="box-body")

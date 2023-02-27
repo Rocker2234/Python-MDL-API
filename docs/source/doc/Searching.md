@@ -1,6 +1,6 @@
 # Searching
 There are two methods and one class that contains the search results.
-One of the method _search()_ is used for movies/drama information retrival 
+One of the method _search()_ is used for movies/drama information retrieval 
 and the other _search_people()_ is used for Casts/Artists who have their profiles on the website.
 It is same as searching for some term on the website. 
 ## **search()**
@@ -18,7 +18,7 @@ This is always equal to the smaller text visible on the website after the title 
 This is used to filter the results obtained.  
 - **year**(Union[int, str]) - This represents the year of release.  
 This is used to filter the results obtained.
-- **eps**(int) - This represents the number of episodes that spesific drama had.  
+- **eps**(int) - This represents the number of episodes that specified drama had.  
 This is used to filter the results obtained.
 - **score**(str) - This represents the rating of the movie/drama.  
 This is used to filter the results obtained.
@@ -64,7 +64,7 @@ This is the container for all the search results.
 
 ### Supported Operations:
 
-`x[index]` - Will return name present in _names_ at the spesified _index_ if index is _int_ or _url_ if index is _str_. Raises TypeError otherwise.  
+`x[index]` - Will return name present in _names_ at the specified _index_ if index is _int_ or _url_ if index is _str_. Raises TypeError otherwise.  
 `len(x)` - Will return the number of elements in the _SearchResult_.  
 `str(x)` - Will return the list of _names_ in _str_ format.
 
@@ -107,7 +107,7 @@ This is the container for all the search results.
 
 ### Supported Operations:
 
-`x[index]` - Will return name present in _names_ at the spesified _index_ if index is _int_ or _url_ if index is _str_. Raises TypeError otherwise.  
+`x[index]` - Will return name present in _names_ at the specified _index_ if index is _int_ or _url_ if index is _str_. Raises TypeError otherwise.  
 `len(x)` - Will return the number of elements in the _PeopleSearchResult_.  
 `str(x)` - Will return the list of _names_ in _str_ format.
 

@@ -16,8 +16,8 @@ This function is used to retrieve movie/drama data from the webpage.
 ### Raises:
 - **InvalidURLError** - The entered URL was not a valid one.
 - **NotMDLError** - The entered URL did not belong to MDL.
-- **RequestTimeoutError** - There was some error getting the responce form the server.
-- **BadHttpResponseError** - Did not get a positive responce from the server.
+- **RequestTimeoutError** - There was some error getting the response from the server.
+- **BadHttpResponseError** - Did not get a positive response from the server.
 
 ### Returns:
 All the data that was extracted from the webpage in the _InfoPage_ object.
@@ -29,7 +29,7 @@ _InfoPage_
 
 _class_ **InfoPage**  
 
-This is the container _class_ whose object contains all the data extracted form the webpage.
+This is the container _class_ whose object contains all the data extracted from the webpage.
 
 ### Supported Operations:
 `str(x)` - Will return the name of the Cast/Artist the object contains details about.
@@ -37,25 +37,25 @@ This is the container _class_ whose object contains all the data extracted form 
 ### Attributes:
 
 - **title**(str) - Name of the movie/drama.
-- **thumbnail**(str) - A link to thumnail obtained directly from the website.
+- **thumbnail**(str) - A link to thumbnail obtained directly from the website.
 - **type**(str) - Indicates weather it is a drama or a movie.
 - **url**(str) - The url that was used for scraping the data.
 - **ratings**(str) - The rating that the movie has.
-- **synopsis**(str) - A short pllot of the movie/drama.
+- **synopsis**(str) - A short plot of the movie/drama.
 - **casts**(list) - All actors that were involved in the movie/drama.
 - **native**(str) - The name of the movie in its native language.
 - **genre**(str) - The genre the movie belongs to.
-- **duration**(str) - The runtime of moive or each episode of a drama.
+- **duration**(str) - The runtime of movie or each episode of a drama.
 - **country**(str) - The country of origin.
 - **aka**(list) - Aliases of the movie/drama.
 - **director**(str) - The person who directed the movie/drama.
 - **screenwriter**(str) - The writer of the movie/drama.
 - **date**(str) - The release date of the movie/drama.
-- **reco**(list) - The recomendatons MDL suggests based on the current movie/drama.
+- **reco**(list) - The recommendations MDL suggests based on the current movie/drama.
 - **reviews**(list) - The user reviews for the current movie/drama.
 
 >Note: `reco` and `reviews` are empty at the time of object creation. 
-> It will be poppulated only after calling the `get_recomendations()` and `get_reviews()`
+> It will be populated only after calling the `get_recommendations()` and `get_reviews()`
 > methods respectively.
 
 ### Methods:
@@ -93,9 +93,9 @@ A _dict_ of data present in the object.
 #### Return Type:
 dict  
 
-_def_ **get_recomendations**(self)
+_def_ **get_recommendations**(self)
 ***
-Used to get recomendations based on current movie/drama. The data will be stored in _reco_.
+Used to get recommendations based on current movie/drama. The data will be stored in _reco_.
 
 
 _def_ **get_reviews**(self)
