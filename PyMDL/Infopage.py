@@ -74,6 +74,18 @@ class InfoPage:
         else:
             if 'aired' in allkeys:
                 self.date = self.details.pop('aired').strip()
+        if 'episodes' in allkeys:
+            self.episodes = int(self.details.pop('episodes'))
+        else:
+            self.episodes = -1
+        if 'where_to_watch' in allkeys:
+            self.where_to_watch = self.details.pop('where_to_watch')
+        else:
+            self.where_to_watch = None
+
+        self.networks = "N/A"
+        if 'original network' in allkeys:
+            self.networks = self.details.pop('original network')
 
     # Finding recommendations
     def get_recommendations(self):
@@ -123,10 +135,13 @@ class InfoPage:
                     'ratings': self.ratings,
                     'synopsis': self.synopsis,
                     'casts': self.casts,
+                    'where_to_watch': self.where_to_watch,
                     'native title': self.native,
+                    'episodes': self.episodes,
                     'genere': self.genre,
                     'duration': self.duration,
                     'country': self.country,
+                    "original network": self.networks,
                     'aka': self.aka,
                     'director': self.director,
                     'screenwriter': self.screenwriter,
@@ -160,8 +175,7 @@ class InfoPage:
                 json.dump(self.dumps(), f, indent=4)
                 return True
         except Exception as e:
-            print("Got Exception\n", e)
-            return False
+            raise Exception("Got Exception\n", e)
 
     def __str__(self):
         return str(self.dumps())
@@ -211,7 +225,7 @@ def info(link: str):
             details['ratings'] = details['ratings'].find("b").text
 
         detailed_info = mainbox.find("div", class_="show-detailsxss").find("ul").find_all("li")
-        req_info = ['native title', 'also known as', 'director', 'screenwriter', 'screenwriter & director', 'genres']
+        req_info = ['native title', 'also known as', 'director', 'screenwriter', 'screenwriter & director', 'genres', 'original network']
         for item in detailed_info:
             try:
                 # if item.text.split(":")[0].lower() == 'tags':
@@ -232,6 +246,24 @@ def info(link: str):
         for item in cast_names:
             casts.append(item.text)
         details['casts'] = casts
+
+        try:
+            where_to_watch_names = soup.find('div', class_='col-lg-8 col-md-8 col-rightx'). \
+                find("div", class_="wts").find_all("b")
+            where_to_watch = []
+            for item in where_to_watch_names:
+                where_to_watch.append(item.text)
+            details['where_to_watch'] = where_to_watch
+        except AttributeError:
+            details['where_to_watch'] = "N/A"
+
+        networks_names = soup.find('div', class_='col-lg-8 col-md-8 col-rightx'). \
+            find("div", class_="box clear").find("div", class_="p-a-sm").find_all("b")
+        networks = []
+        for item in networks_names:
+            networks.append(item.text)
+        details['networks'] = networks
+
         details_box = soup.find("div", class_="box-body light-b").ul.find_all("li")
         for item in details_box[1:]:
             details[item.text.split(":")[0].lower()] = item.text.split(":")[1].strip()

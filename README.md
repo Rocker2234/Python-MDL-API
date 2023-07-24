@@ -23,13 +23,15 @@ pip install PyMDL
 
 ## Authors
 
-Rocker2234  
+Rocker2234
 RAiU14
 
 ## Last Release Changes
 * 1.0.1
   * Fix more Typos
-  * Fix incorrect filter when style is used 
+  * Fix incorrect filter when style is used
+* 1.0.2
+  * Add adv_search method
 
 ## License
 
